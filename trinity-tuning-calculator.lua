@@ -9,7 +9,6 @@ local encoding = require 'encoding'
 encoding.default = 'UTF-8'
 local u8 = encoding.UTF8
 local cp = encoding.cp1251
-local inspect = require 'inspect'
 
 local vehicles = {
   { brake = 0, clutch = 0, exhaust = 2, handbrake = 0, injection = 0, intercooler = 0, piston = 0, suspension = 0, turbocharging = 0, isModificationSupported = true, },
