@@ -466,6 +466,7 @@ local prices = {
 }
 
 local parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
+local price = 0
 
 local mainWindowState = imgui.ImBool(false)
 local selectedVehicle = imgui.ImInt(-1)
@@ -480,7 +481,7 @@ function imgui.OnDrawFrame()
       return
     end
     imgui.BeginGroup()
-    imgui.BeginChild('Select Panel', imgui.ImVec2(275, 400), true)
+    imgui.BeginChild('Select Panel', imgui.ImVec2(275, 410), true)
     imgui.PushItemWidth(200)
     if imgui.ListBox('', selectedVehicle, vehicleNames, imgui.ImInt(211), -1) then
       setCurrentItems()
@@ -509,7 +510,7 @@ function imgui.OnDrawFrame()
     end
     imgui.EndChild()
     imgui.SameLine()
-    imgui.BeginChild('Current panel', imgui.ImVec2(285, 400), true)
+    imgui.BeginChild('Current panel', imgui.ImVec2(285, 410), true)
       imgui.PushItemWidth(100)
       imgui.Text('Текущая комплектация')
       imgui.Combo('Тормоза', currentItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
@@ -534,7 +535,7 @@ function imgui.OnDrawFrame()
       imgui.PopItemWidth()
     imgui.EndChild()
     imgui.SameLine()
-    imgui.BeginChild('Upgrade panel', imgui.ImVec2(275, 400), true)
+    imgui.BeginChild('Upgrade panel', imgui.ImVec2(275, 410), true)
       imgui.PushItemWidth(100)
       imgui.Text('Желаемая комплектация')
       if imgui.Combo('Тормоза', requestedItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
@@ -609,12 +610,13 @@ function imgui.OnDrawFrame()
       imgui.PopItemWidth()
     imgui.EndChild()
     imgui.SameLine()
-    imgui.BeginChild('Price panel', imgui.ImVec2(275, 400), true)
+    imgui.BeginChild('Price panel', imgui.ImVec2(275, 410), true)
       for i, v in ipairs({'brake', 'handbrake', 'suspension', 'clutch', 'intercooler', 'exhaust', 'piston', 'injection', 'turbocharging'}) do
         for i = currentItems[v].v + 1, requestedItems[v].v do
           imgui.Text(modNames[v] .. (v ~= 'handbrake' and ' ' .. int2letter(i, true) or '') .. ' +' .. formatInt(prices[v][i]) .. ' $')
         end
       end
+      imgui.Text('Итог: ' .. formatInt(price) .. ' $')
     imgui.EndChild()
     imgui.EndGroup()
     imgui.End()
@@ -769,7 +771,7 @@ function main()
 end
 
 function calculateTuningPrice(currentItems, selectedItems)
-  local price = 0
+  price = 0
   for k, v in pairs(selectedItems) do
     if currentItems[k].v ~= selectedItems[k].v then
       for i = currentItems[k].v + 1, selectedItems[k].v do
@@ -777,7 +779,6 @@ function calculateTuningPrice(currentItems, selectedItems)
       end
     end
   end
-  return price
 end
 
 function int2letter(int, useHash)
