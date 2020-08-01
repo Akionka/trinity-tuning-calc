@@ -531,6 +531,7 @@ function imgui.OnDrawFrame()
         for k, v in pairs(currentItems) do
           requestedItems[k].v = v.v
         end
+        calculateTuningPrice(currentItems, requestedItems)
       end
       imgui.PopItemWidth()
     imgui.EndChild()
