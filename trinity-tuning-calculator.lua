@@ -467,7 +467,7 @@ local prices = {
 
 local parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
 
-local mainWindowState = imgui.ImBool(true)
+local mainWindowState = imgui.ImBool(false)
 local selectedVehicle = imgui.ImInt(-1)
 local vehiclesList = {}
 local currentItems = {brake = imgui.ImInt(0), clutch = imgui.ImInt(0), exhaust = imgui.ImInt(0), handbrake = imgui.ImInt(0), injection = imgui.ImInt(0), intercooler = imgui.ImInt(0), piston = imgui.ImInt(0), suspension = imgui.ImInt(0), turbocharging = imgui.ImInt(0)}
@@ -758,7 +758,7 @@ function main()
 
   applyCustomStyle()
 
-  sampRegisterChatCommand('calc', function()
+  sampRegisterChatCommand('tcalc', function()
     mainWindowState.v = not mainWindowState.v
   end)
 
