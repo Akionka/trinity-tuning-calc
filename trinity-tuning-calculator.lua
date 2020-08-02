@@ -531,7 +531,6 @@ function imgui.OnDrawFrame()
         for k, v in pairs(currentItems) do
           requestedItems[k].v = v.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       imgui.PopItemWidth()
     imgui.EndChild()
@@ -539,26 +538,18 @@ function imgui.OnDrawFrame()
     imgui.BeginChild('Upgrade panel', imgui.ImVec2(275, 410), true)
       imgui.PushItemWidth(100)
       imgui.Text('Желаемая комплектация')
-      if imgui.Combo('Тормоза', requestedItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        calculateTuningPrice(currentItems, requestedItems)
-      end
-      if imgui.Combo('Ручной тормоз', requestedItems.handbrake, {'Нет', 'Есть'}, imgui.ImInt(2)) then
-        calculateTuningPrice(currentItems, requestedItems)
-      end
-      if imgui.Combo('Подвеска', requestedItems.suspension, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        calculateTuningPrice(currentItems, requestedItems)
-      end
+      imgui.Combo('Тормоза', requestedItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
+      imgui.Combo('Ручной тормоз', requestedItems.handbrake, {'Нет', 'Есть'}, imgui.ImInt(2))
+      imgui.Combo('Подвеска', requestedItems.suspension, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
       if imgui.Combo('Сцепление', requestedItems.clutch, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.clutch.v < requestedItems.turbocharging.v then
           requestedItems.turbocharging.v = requestedItems.clutch.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       if imgui.Combo('Интеркулер', requestedItems.intercooler, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.intercooler.v < requestedItems.turbocharging.v then
           requestedItems.turbocharging.v = requestedItems.intercooler.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       if imgui.Combo('Выхлоп', requestedItems.exhaust, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.exhaust.v < requestedItems.turbocharging.v then
@@ -567,7 +558,6 @@ function imgui.OnDrawFrame()
         if requestedItems.exhaust.v < requestedItems.injection.v then
           requestedItems.injection.v = requestedItems.exhaust.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       if imgui.Combo('Поршни', requestedItems.piston, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.piston.v < requestedItems.turbocharging.v then
@@ -576,7 +566,6 @@ function imgui.OnDrawFrame()
         if requestedItems.piston.v < requestedItems.injection.v then
           requestedItems.injection.v = requestedItems.piston.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       if imgui.Combo('Впрыск', requestedItems.injection, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.injection.v < requestedItems.turbocharging.v then
@@ -588,7 +577,6 @@ function imgui.OnDrawFrame()
         if requestedItems.exhaust.v < requestedItems.injection.v then
           requestedItems.exhaust.v = requestedItems.injection.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       if imgui.Combo('Турбонаддув', requestedItems.turbocharging, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
         if requestedItems.clutch.v < requestedItems.turbocharging.v then
@@ -606,7 +594,6 @@ function imgui.OnDrawFrame()
         if requestedItems.injection.v < requestedItems.turbocharging.v then
           requestedItems.injection.v = requestedItems.turbocharging.v
         end
-        calculateTuningPrice(currentItems, requestedItems)
       end
       imgui.PopItemWidth()
     imgui.EndChild()
@@ -617,6 +604,7 @@ function imgui.OnDrawFrame()
           imgui.Text(modNames[v] .. (v ~= 'handbrake' and ' ' .. int2letter(i, true) or '') .. ' +' .. formatInt(prices[v][i]) .. ' $')
         end
       end
+      calculateTuningPrice(currentItems, requestedItems)
       imgui.Text('Итог: ' .. formatInt(price) .. ' $')
     imgui.EndChild()
     imgui.EndGroup()
