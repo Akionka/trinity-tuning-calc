@@ -461,7 +461,7 @@ local prices = {
   intercooler = { 3000, 5000, 7000 },
   piston = { 3000, 5000, 7000 },
   suspension = { 5000, 10000, 15000 },
-  turbocharging = { 10000, 20000, 30000 },w
+  turbocharging = { 10000, 20000, 30000 },
 }
 
 local parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
