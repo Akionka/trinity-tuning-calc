@@ -457,10 +457,9 @@ local prices = {
   clutch = { 5000, 10000, 15000 },
   exhaust = { 3000, 5000, 7000 },
   handbrake = { 10000 },
-  injection = { 3000, 5000, 7000 },
-  intercooler = { 5000, 10000, 15000 },
+  injection = { 5000, 10000, 15000 },
+  intercooler = { 3000, 5000, 7000 },
   piston = { 3000, 5000, 7000 },
-  intercooler = { 5000, 10000, 15000 },
   suspension = { 5000, 10000, 15000 },
   turbocharging = { 10000, 20000, 30000 },
 }
