@@ -225,29 +225,62 @@ local vehicles = {
   { name = 'Field Kitchen', brake = 0, clutch = 0, exhaust = 0, handbrake = 0, injection = 0, intercooler = 0, piston = 0, suspension = 0, turbocharging = 0, isModificationSupported = false, },
 }
 
-
-local modNames = {
-  brake = 'Тормоз',
-  handbrake = 'Ручной тормоз',
-  suspension = 'Подвеска',
-  clutch = 'Сцепление',
-  intercooler = 'Интеркулер',
-  exhaust = 'Выхлоп',
-  piston = 'Поршни',
-  injection = 'Впрыск',
-  turbocharging = 'Турбонаддув',
-}
-
-local prices = {
-  brake = { 5000, 10000, 15000 },
-  clutch = { 5000, 10000, 15000 },
-  exhaust = { 3000, 5000, 7000 },
-  handbrake = { 10000 },
-  injection = { 5000, 10000, 15000 },
-  intercooler = { 3000, 5000, 7000 },
-  piston = { 3000, 5000, 7000 },
-  suspension = { 5000, 10000, 15000 },
-  turbocharging = { 10000, 20000, 30000 },
+local modifications = {
+  {
+    key = 'brake',
+    name = 'Тормоз',
+    hasManyLevels = true,
+    price = { 5000, 10000, 15000 },
+    dependsOn = {},
+  }, {
+    key = 'handbrake',
+    name = 'Ручной тормоз',
+    hasManyLevels = false,
+    price = { 10000 },
+    dependsOn = {},
+  }, {
+    key = 'suspension',
+    name = 'Подвеска',
+    hasManyLevels = true,
+    price = { 5000, 10000, 15000 },
+    dependsOn = {},
+  }, {
+    key = 'clutch',
+    name = 'Сцепление',
+    hasManyLevels = true,
+    price = { 5000, 10000, 15000 },
+    dependsOn = {},
+  }, {
+    key = 'intercooler',
+    name = 'Интеркулер',
+    hasManyLevels = true,
+    price = { 3000, 5000, 7000 },
+    dependsOn = {},
+  }, {
+    key = 'exhaust',
+    name = 'Выхлоп',
+    hasManyLevels = true,
+    price = { 3000, 5000, 7000 },
+    dependsOn = {},
+  }, {
+    key = 'piston',
+    name = 'Поршни',
+    hasManyLevels = true,
+    price = { 3000, 5000, 7000 },
+    dependsOn = {},
+  }, {
+    key = 'injection',
+    name = 'Впрыск',
+    hasManyLevels = true,
+    price = { 5000, 10000, 15000 },
+    dependsOn = {'piston', 'exhaust'},
+  }, {
+    key = 'turbocharging',
+    name = 'Турбонаддув',
+    hasManyLevels = true,
+    price = { 10000, 20000, 30000 },
+    dependsOn = {'injection', 'piston', 'exhaust', 'intercooler', 'clutch'},
+  },
 }
 
 local parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
@@ -286,19 +319,10 @@ function imgui.OnDrawFrame()
       imgui.Text(vehicles[selectedVehicle].isModificationSupported and 'Тюнинг этого т/с поддерживается' or 'Тюнинг этого т/с не поддерживается')
       if vehicles[selectedVehicle].isModificationSupported then
         imgui.Text('Базовая комплектация:')
-        imgui.BulletText('Тормоза: ' .. int2letter(vehicles[selectedVehicle].brake, true))
-        imgui.SameLine()
-        imgui.BulletText('Ручной тормоз: ' .. int2letter(vehicles[selectedVehicle].handbrake, true))
-        imgui.BulletText('Подвеска: ' .. int2letter(vehicles[selectedVehicle].suspension, true))
-        imgui.SameLine()
-        imgui.BulletText('Сцепление: ' .. int2letter(vehicles[selectedVehicle].clutch, true))
-        imgui.BulletText('Интеркулер: ' .. int2letter(vehicles[selectedVehicle].intercooler, true))
-        imgui.SameLine()
-        imgui.BulletText('Выхлоп: ' .. int2letter(vehicles[selectedVehicle].exhaust, true))
-        imgui.BulletText('Поршни: ' .. int2letter(vehicles[selectedVehicle].piston, true))
-        imgui.SameLine()
-        imgui.BulletText('Впрыск: ' .. int2letter(vehicles[selectedVehicle].injection, true))
-        imgui.BulletText('Турбонаддув: ' .. int2letter(vehicles[selectedVehicle].turbocharging, true))
+        for i, v in ipairs(modifications) do
+          imgui.BulletText(('%s: %s'):format(v.name, int2letter(vehicles[selectedVehicle][v.key], true)))
+          if i % 2 == 1 then imgui.SameLine() end
+        end
       end
     end
     imgui.EndChild()
@@ -306,15 +330,12 @@ function imgui.OnDrawFrame()
     imgui.BeginChild('Current panel', imgui.ImVec2(285, 410), true)
       imgui.PushItemWidth(100)
       imgui.Text('Текущая комплектация')
-      imgui.Combo('Тормоза', currentItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Ручной тормоз', currentItems.handbrake, {'Нет', 'Есть'}, imgui.ImInt(2))
-      imgui.Combo('Подвеска', currentItems.suspension, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Сцепление', currentItems.clutch, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Интеркулер', currentItems.intercooler, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Выхлоп', currentItems.exhaust, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Поршни', currentItems.piston, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Впрыск', currentItems.injection, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Турбонаддув', currentItems.turbocharging, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
+      for i, v in ipairs(modifications) do
+        imgui.Combo(v.name, currentItems[v.key],
+          v.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
+          v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
+        )
+      end
       if imgui.Button('Взять с ближайшей машины', imgui.ImVec2(250,0)) then
         sampSendChat('/look')
       end
@@ -331,70 +352,41 @@ function imgui.OnDrawFrame()
     imgui.BeginChild('Upgrade panel', imgui.ImVec2(275, 410), true)
       imgui.PushItemWidth(100)
       imgui.Text('Желаемая комплектация')
-      imgui.Combo('Тормоза', requestedItems.brake, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      imgui.Combo('Ручной тормоз', requestedItems.handbrake, {'Нет', 'Есть'}, imgui.ImInt(2))
-      imgui.Combo('Подвеска', requestedItems.suspension, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4))
-      if imgui.Combo('Сцепление', requestedItems.clutch, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.clutch.v < requestedItems.turbocharging.v then
-          requestedItems.turbocharging.v = requestedItems.clutch.v
-        end
-      end
-      if imgui.Combo('Интеркулер', requestedItems.intercooler, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.intercooler.v < requestedItems.turbocharging.v then
-          requestedItems.turbocharging.v = requestedItems.intercooler.v
-        end
-      end
-      if imgui.Combo('Выхлоп', requestedItems.exhaust, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.exhaust.v < requestedItems.turbocharging.v then
-          requestedItems.turbocharging.v = requestedItems.exhaust.v
-        end
-        if requestedItems.exhaust.v < requestedItems.injection.v then
-          requestedItems.injection.v = requestedItems.exhaust.v
-        end
-      end
-      if imgui.Combo('Поршни', requestedItems.piston, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.piston.v < requestedItems.turbocharging.v then
-          requestedItems.turbocharging.v = requestedItems.piston.v
-        end
-        if requestedItems.piston.v < requestedItems.injection.v then
-          requestedItems.injection.v = requestedItems.piston.v
-        end
-      end
-      if imgui.Combo('Впрыск', requestedItems.injection, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.injection.v < requestedItems.turbocharging.v then
-          requestedItems.turbocharging.v = requestedItems.injection.v
-        end
-        if requestedItems.piston.v < requestedItems.injection.v then
-          requestedItems.piston.v = requestedItems.injection.v
-        end
-        if requestedItems.exhaust.v < requestedItems.injection.v then
-          requestedItems.exhaust.v = requestedItems.injection.v
-        end
-      end
-      if imgui.Combo('Турбонаддув', requestedItems.turbocharging, {'Нет', 'A', 'B', 'C'}, imgui.ImInt(4)) then
-        if requestedItems.clutch.v < requestedItems.turbocharging.v then
-          requestedItems.clutch.v = requestedItems.turbocharging.v
-        end
-        if requestedItems.intercooler.v < requestedItems.turbocharging.v then
-          requestedItems.intercooler.v = requestedItems.turbocharging.v
-        end
-        if requestedItems.exhaust.v < requestedItems.turbocharging.v then
-          requestedItems.exhaust.v = requestedItems.turbocharging.v
-        end
-        if requestedItems.piston.v < requestedItems.turbocharging.v then
-          requestedItems.piston.v = requestedItems.turbocharging.v
-        end
-        if requestedItems.injection.v < requestedItems.turbocharging.v then
-          requestedItems.injection.v = requestedItems.turbocharging.v
+      for i1, v1 in ipairs(modifications) do
+        if imgui.Combo(v1.name, requestedItems[v1.key],
+          v1.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
+          v1.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
+        ) then
+          -- Проверка, что изменненый объект уровнем не ниже, чем тот объект,
+          -- который зависит от выбранного.
+          -- При выборе спецления А, если выбран турбо С, турбо станет А
+          for i2, v2 in ipairs(modifications) do
+            for i3, v3 in ipairs(v2.dependsOn) do
+              if v1.key == v3 then
+                if requestedItems[v1.key].v < requestedItems[v2.key].v then
+                  requestedItems[v2.key].v = requestedItems[v1.key].v
+                end
+              end
+            end
+          end
+          for i2, v2 in ipairs(v1.dependsOn) do
+            if requestedItems[v2].v < requestedItems[v1.key].v then
+              requestedItems[v2].v = requestedItems[v1.key].v
+            end
+          end
         end
       end
       imgui.PopItemWidth()
     imgui.EndChild()
     imgui.SameLine()
     imgui.BeginChild('Price panel', imgui.ImVec2(275, 410), true)
-      for i, v in ipairs({'brake', 'handbrake', 'suspension', 'clutch', 'intercooler', 'exhaust', 'piston', 'injection', 'turbocharging'}) do
-        for i = currentItems[v].v + 1, requestedItems[v].v do
-          imgui.Text(modNames[v] .. (v ~= 'handbrake' and ' ' .. int2letter(i, true) or '') .. ' +' .. formatInt(prices[v][i]) .. ' $')
+      for i, v in ipairs(modifications) do
+        for i = currentItems[v.key].v + 1, requestedItems[v.key].v do
+          imgui.Text(('%s%s %s $'):format(
+            v.name,
+            v.hasManyLevels and ' ' .. int2letter(i, true) or '',
+            formatInt(v.price[i])
+          ))
         end
       end
       calculateTuningPrice(currentItems, requestedItems)
@@ -557,7 +549,11 @@ function calculateTuningPrice(currentItems, selectedItems)
   for k, v in pairs(selectedItems) do
     if currentItems[k].v ~= selectedItems[k].v then
       for i = currentItems[k].v + 1, selectedItems[k].v do
-        price = price + prices[k][i]
+        for _, v in ipairs(modifications) do
+          if v.key == k then
+            price = price + v.price[i]
+          end
+        end
       end
     end
   end
@@ -590,7 +586,6 @@ end
 
 function setCurrentItems(overrideRequestedItems)
   local v = vehicles[selectedVehicle]
-  print(selectedVehicle)
   currentItems = {brake = imgui.ImInt(v.brake), clutch = imgui.ImInt(v.clutch), exhaust = imgui.ImInt(v.exhaust), handbrake = imgui.ImInt(v.handbrake), injection = imgui.ImInt(v.injection), intercooler = imgui.ImInt(v.intercooler), piston = imgui.ImInt(v.piston), suspension = imgui.ImInt(v.suspension), turbocharging = imgui.ImInt(v.turbocharging)}
   if overrideRequestedItems then
     requestedItems = {brake = imgui.ImInt(v.brake), clutch = imgui.ImInt(v.clutch), exhaust = imgui.ImInt(v.exhaust), handbrake = imgui.ImInt(v.handbrake), injection = imgui.ImInt(v.injection), intercooler = imgui.ImInt(v.intercooler), piston = imgui.ImInt(v.piston), suspension = imgui.ImInt(v.suspension), turbocharging = imgui.ImInt(v.turbocharging)}
