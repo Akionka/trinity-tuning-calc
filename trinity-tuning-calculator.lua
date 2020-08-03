@@ -1,6 +1,6 @@
 script_name('Trinity Tuning Calculator')
 script_author('Akionka')
-script_version('0.0.1')
+script_version('0.0.2')
 script_version_number(1)
 
 local sampev = require 'samp.events'
