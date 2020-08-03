@@ -461,17 +461,18 @@ local prices = {
   intercooler = { 3000, 5000, 7000 },
   piston = { 3000, 5000, 7000 },
   suspension = { 5000, 10000, 15000 },
-  turbocharging = { 10000, 20000, 30000 },
+  turbocharging = { 10000, 20000, 30000 },w
 }
 
 local parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
 local price = 0
 
 local mainWindowState = imgui.ImBool(false)
-local selectedVehicle = imgui.ImInt(-1)
+local selectedVehicle = -1
 local vehiclesList = {}
 local currentItems = {brake = imgui.ImInt(0), clutch = imgui.ImInt(0), exhaust = imgui.ImInt(0), handbrake = imgui.ImInt(0), injection = imgui.ImInt(0), intercooler = imgui.ImInt(0), piston = imgui.ImInt(0), suspension = imgui.ImInt(0), turbocharging = imgui.ImInt(0)}
 local requestedItems = {brake = imgui.ImInt(0), clutch = imgui.ImInt(0), exhaust = imgui.ImInt(0), handbrake = imgui.ImInt(0), injection = imgui.ImInt(0), intercooler = imgui.ImInt(0), piston = imgui.ImInt(0), suspension = imgui.ImInt(0), turbocharging = imgui.ImInt(0)}
+local filter = imgui.ImGuiTextFilter()
 
 function imgui.OnDrawFrame()
   if mainWindowState.v then
@@ -482,29 +483,36 @@ function imgui.OnDrawFrame()
     imgui.BeginGroup()
     imgui.BeginChild('Select Panel', imgui.ImVec2(275, 410), true)
     imgui.PushItemWidth(200)
-    if imgui.ListBox('', selectedVehicle, vehicleNames, imgui.ImInt(211), -1) then
-      setCurrentItems()
+    filter:Draw('Поиск', imgui.ImVec2(10, 100))
+    if imgui.ListBoxHeader('') then
+      for i, v in ipairs(vehicleNames) do
+        if filter:PassFilter(v) and imgui.Selectable(v, selectedVehicle == i) then
+          selectedVehicle = i
+          setCurrentItems()
+        end
+      end
+      imgui.ListBoxFooter()
     end
     imgui.PopItemWidth()
-    if selectedVehicle.v == -1 then
+    if selectedVehicle == -1 then
       imgui.Text('Не выбрано т/с, выберите из списка выше')
     else
-      imgui.Text(vehicles[selectedVehicle.v + 1].isModificationSupported and 'Тюнинг этого т/с поддерживается' or 'Тюнинг этого т/с не поддерживается')
-      if vehicles[selectedVehicle.v + 1].isModificationSupported then
+      imgui.Text(vehicles[selectedVehicle].isModificationSupported and 'Тюнинг этого т/с поддерживается' or 'Тюнинг этого т/с не поддерживается')
+      if vehicles[selectedVehicle].isModificationSupported then
         imgui.Text('Базовая комплектация:')
-        imgui.BulletText('Тормоза: ' .. int2letter(vehicles[selectedVehicle.v + 1].brake, true))
+        imgui.BulletText('Тормоза: ' .. int2letter(vehicles[selectedVehicle].brake, true))
         imgui.SameLine()
-        imgui.BulletText('Ручной тормоз: ' .. int2letter(vehicles[selectedVehicle.v + 1].handbrake, true))
-        imgui.BulletText('Подвеска: ' .. int2letter(vehicles[selectedVehicle.v + 1].suspension, true))
+        imgui.BulletText('Ручной тормоз: ' .. int2letter(vehicles[selectedVehicle].handbrake, true))
+        imgui.BulletText('Подвеска: ' .. int2letter(vehicles[selectedVehicle].suspension, true))
         imgui.SameLine()
-        imgui.BulletText('Сцепление: ' .. int2letter(vehicles[selectedVehicle.v + 1].clutch, true))
-        imgui.BulletText('Интеркулер: ' .. int2letter(vehicles[selectedVehicle.v + 1].intercooler, true))
+        imgui.BulletText('Сцепление: ' .. int2letter(vehicles[selectedVehicle].clutch, true))
+        imgui.BulletText('Интеркулер: ' .. int2letter(vehicles[selectedVehicle].intercooler, true))
         imgui.SameLine()
-        imgui.BulletText('Выхлоп: ' .. int2letter(vehicles[selectedVehicle.v + 1].exhaust, true))
-        imgui.BulletText('Поршни: ' .. int2letter(vehicles[selectedVehicle.v + 1].piston, true))
+        imgui.BulletText('Выхлоп: ' .. int2letter(vehicles[selectedVehicle].exhaust, true))
+        imgui.BulletText('Поршни: ' .. int2letter(vehicles[selectedVehicle].piston, true))
         imgui.SameLine()
-        imgui.BulletText('Впрыск: ' .. int2letter(vehicles[selectedVehicle.v + 1].injection, true))
-        imgui.BulletText('Турбонаддув: ' .. int2letter(vehicles[selectedVehicle.v + 1].turbocharging, true))
+        imgui.BulletText('Впрыск: ' .. int2letter(vehicles[selectedVehicle].injection, true))
+        imgui.BulletText('Турбонаддув: ' .. int2letter(vehicles[selectedVehicle].turbocharging, true))
       end
     end
     imgui.EndChild()
@@ -695,7 +703,7 @@ function sampev.onServerMessage(color, text)
     local name = text:match(cp'Перед вами стоит .+ {D8A903}(.-){ffffff}')
     for i, v in ipairs(vehicleNames) do
       if v == name then
-        selectedVehicle.v = i - 1
+        selectedVehicle = i - 1
         setCurrentItems()
         return
       end
@@ -704,7 +712,7 @@ function sampev.onServerMessage(color, text)
   if text:find(cp'Модификации:{abcdef}') then
     -- ALARM: SHIT CODE! ALARM: SHIT CODE! ALARM: SHIT CODE! ALARM: SHIT CODE!
     if not parsedMods.brake then
-      currentItems.brake.v = letter2int(text:match(cp'[Тт]ормоза #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].brake))
+      currentItems.brake.v = letter2int(text:match(cp'[Тт]ормоза #(%w)') or int2letter(vehicles[selectedVehicle].brake))
       parsedMods.brake = text:find(cp'[Тт]ормоза #(%w)')
     end
     if not parsedMods.handbrake then
@@ -712,31 +720,31 @@ function sampev.onServerMessage(color, text)
       parsedMods.handbrake = text:find(cp'[Гг]оночный ручной тормоз')
     end
     if not parsedMods.suspension then
-      currentItems.suspension.v = letter2int(text:match(cp'[Пп]одвеска #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].suspension))
+      currentItems.suspension.v = letter2int(text:match(cp'[Пп]одвеска #(%w)') or int2letter(vehicles[selectedVehicle].suspension))
       parsedMods.suspension = text:find(cp'[Пп]одвеска #(%w)')
     end
     if not parsedMods.clutch then
-      currentItems.clutch.v = letter2int(text:match(cp'[Сс]цепление #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].clutch))
+      currentItems.clutch.v = letter2int(text:match(cp'[Сс]цепление #(%w)') or int2letter(vehicles[selectedVehicle].clutch))
       parsedMods.clutch = text:find(cp'[Сс]цепление #(%w)')
     end
     if not parsedMods.intercooler then
-      currentItems.intercooler.v = letter2int(text:match(cp'[Ии]нтеркулер #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].intercooler))
+      currentItems.intercooler.v = letter2int(text:match(cp'[Ии]нтеркулер #(%w)') or int2letter(vehicles[selectedVehicle].intercooler))
       parsedMods.intercooler = text:find(cp'[Ии]нтеркулер #(%w)')
     end
     if not parsedMods.exhaust then
-      currentItems.exhaust.v = letter2int(text:match(cp'[Вв]ыхлоп #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].exhaust))
+      currentItems.exhaust.v = letter2int(text:match(cp'[Вв]ыхлоп #(%w)') or int2letter(vehicles[selectedVehicle].exhaust))
       parsedMods.exhaust = text:find(cp'[Вв]ыхлоп #(%w)')
     end
     if not parsedMods.piston then
-      currentItems.piston.v = letter2int(text:match(cp'[Пп]оршневая #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].piston))
+      currentItems.piston.v = letter2int(text:match(cp'[Пп]оршневая #(%w)') or int2letter(vehicles[selectedVehicle].piston))
       parsedMods.piston = text:find(cp'[Пп]оршневая #(%w)')
     end
     if not parsedMods.injection then
-      currentItems.injection.v = letter2int(text:match(cp'[Вв]прыск #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].injection))
+      currentItems.injection.v = letter2int(text:match(cp'[Вв]прыск #(%w)') or int2letter(vehicles[selectedVehicle].injection))
       parsedMods.injection = text:find(cp'[Вв]прыск #(%w)')
     end
     if not parsedMods.turbocharging then
-      currentItems.turbocharging.v = letter2int(text:match(cp'[Тт]урбонаддув #(%w)') or int2letter(vehicles[selectedVehicle.v + 1].turbocharging))
+      currentItems.turbocharging.v = letter2int(text:match(cp'[Тт]урбонаддув #(%w)') or int2letter(vehicles[selectedVehicle].turbocharging))
       parsedMods.turbocharging = text:find(cp'[Тт]урбонаддув #(%w)')
     end
   end
@@ -795,7 +803,8 @@ function formatInt(int)
 end
 
 function setCurrentItems(overrideRequestedItems)
-  local v = vehicles[selectedVehicle.v + 1]
+  local v = vehicles[selectedVehicle]
+  print(selectedVehicle)
   currentItems = {brake = imgui.ImInt(v.brake), clutch = imgui.ImInt(v.clutch), exhaust = imgui.ImInt(v.exhaust), handbrake = imgui.ImInt(v.handbrake), injection = imgui.ImInt(v.injection), intercooler = imgui.ImInt(v.intercooler), piston = imgui.ImInt(v.piston), suspension = imgui.ImInt(v.suspension), turbocharging = imgui.ImInt(v.turbocharging)}
   if overrideRequestedItems then
     requestedItems = {brake = imgui.ImInt(v.brake), clutch = imgui.ImInt(v.clutch), exhaust = imgui.ImInt(v.exhaust), handbrake = imgui.ImInt(v.handbrake), injection = imgui.ImInt(v.injection), intercooler = imgui.ImInt(v.intercooler), piston = imgui.ImInt(v.piston), suspension = imgui.ImInt(v.suspension), turbocharging = imgui.ImInt(v.turbocharging)}
