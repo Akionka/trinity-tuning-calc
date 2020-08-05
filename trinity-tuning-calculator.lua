@@ -479,9 +479,9 @@ function sampev.onServerMessage(color, text)
   if text:find(cp'Перед вами стоит .+ {D8A903}.-{ffffff}') then
     parsedMods = {brake = false, clutch = false, exhaust = false, handbrake = false, injection = false, intercooler = false, piston = false, suspension = false, turbocharging = false}
     local name = text:match(cp'Перед вами стоит .+ {D8A903}(.-){ffffff}')
-    for i, v in ipairs(vehicleNames) do
-      if v == name then
-        selectedVehicle = i - 1
+    for i, v in ipairs(vehicles) do
+      if v.name == name then
+        selectedVehicle = i
         setCurrentItems()
         return
       end
