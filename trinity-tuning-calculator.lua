@@ -1,7 +1,7 @@
 script_name('Trinity Tuning Calculator')
 script_author('Akionka')
-script_version('0.0.2')
-script_version_number(1)
+script_version('0.0.3')
+script_version_number(4)
 
 local sampev = require 'samp.events'
 local imgui = require 'imgui'
@@ -228,13 +228,13 @@ local vehicles = {
 local modifications = {
   {
     key = 'brake',
-    name = 'Тормоз',
+    name = 'Тормоза',
     hasManyLevels = true,
     price = { 5000, 10000, 15000 },
     dependsOn = {},
   }, {
     key = 'handbrake',
-    name = 'Ручной тормоз',
+    name = 'Гоночный ручной тормоз',
     hasManyLevels = false,
     price = { 10000 },
     dependsOn = {},
@@ -264,7 +264,7 @@ local modifications = {
     dependsOn = {},
   }, {
     key = 'piston',
-    name = 'Поршни',
+    name = 'Поршневая',
     hasManyLevels = true,
     price = { 3000, 5000, 7000 },
     dependsOn = {},
@@ -488,42 +488,25 @@ function sampev.onServerMessage(color, text)
     end
   end
   if text:find(cp'Модификации:{abcdef}') then
-    -- ALARM: SHIT CODE! ALARM: SHIT CODE! ALARM: SHIT CODE! ALARM: SHIT CODE!
-    if not parsedMods.brake then
-      currentItems.brake.v = letter2int(text:match(cp'[Тт]ормоза #(%w)') or int2letter(vehicles[selectedVehicle].brake))
-      parsedMods.brake = text:find(cp'[Тт]ормоза #(%w)')
-    end
-    if not parsedMods.handbrake then
-      currentItems.handbrake.v = text:find(cp'[Гг]оночный ручной тормоз') and 1 or 0
-      parsedMods.handbrake = text:find(cp'[Гг]оночный ручной тормоз')
-    end
-    if not parsedMods.suspension then
-      currentItems.suspension.v = letter2int(text:match(cp'[Пп]одвеска #(%w)') or int2letter(vehicles[selectedVehicle].suspension))
-      parsedMods.suspension = text:find(cp'[Пп]одвеска #(%w)')
-    end
-    if not parsedMods.clutch then
-      currentItems.clutch.v = letter2int(text:match(cp'[Сс]цепление #(%w)') or int2letter(vehicles[selectedVehicle].clutch))
-      parsedMods.clutch = text:find(cp'[Сс]цепление #(%w)')
-    end
-    if not parsedMods.intercooler then
-      currentItems.intercooler.v = letter2int(text:match(cp'[Ии]нтеркулер #(%w)') or int2letter(vehicles[selectedVehicle].intercooler))
-      parsedMods.intercooler = text:find(cp'[Ии]нтеркулер #(%w)')
-    end
-    if not parsedMods.exhaust then
-      currentItems.exhaust.v = letter2int(text:match(cp'[Вв]ыхлоп #(%w)') or int2letter(vehicles[selectedVehicle].exhaust))
-      parsedMods.exhaust = text:find(cp'[Вв]ыхлоп #(%w)')
-    end
-    if not parsedMods.piston then
-      currentItems.piston.v = letter2int(text:match(cp'[Пп]оршневая #(%w)') or int2letter(vehicles[selectedVehicle].piston))
-      parsedMods.piston = text:find(cp'[Пп]оршневая #(%w)')
-    end
-    if not parsedMods.injection then
-      currentItems.injection.v = letter2int(text:match(cp'[Вв]прыск #(%w)') or int2letter(vehicles[selectedVehicle].injection))
-      parsedMods.injection = text:find(cp'[Вв]прыск #(%w)')
-    end
-    if not parsedMods.turbocharging then
-      currentItems.turbocharging.v = letter2int(text:match(cp'[Тт]урбонаддув #(%w)') or int2letter(vehicles[selectedVehicle].turbocharging))
-      parsedMods.turbocharging = text:find(cp'[Тт]урбонаддув #(%w)')
+    for k, v in pairs(parsedMods) do
+      print(k, v)
+      if not v then
+        for i, v in ipairs(modifications) do
+          if v.key == k then
+            local name = cp:encode(v.name)
+            if v.hasManyLevels then
+              local pattern = ('[%s%s]%s #(%%w)'):format(name:sub(1, 1), stringToLower(name:sub(1, 1)), name:sub(2, #name))
+              currentItems[k].v = letter2int(text:match(pattern) or int2letter(vehicles[selectedVehicle][k]))
+              parsedMods[k] = not not text:find(pattern)
+              print(pattern, text, text:find(pattern))
+            else
+              local pattern = ('[%s%s]%s'):format(name:sub(1, 1), stringToLower(name:sub(1, 1)), name:sub(2, #name))
+              currentItems[k].v = text:find(pattern) and 1 or 0
+              parsedMods[k] = not not text:find(cp'[Гг]оночный ручной тормоз')
+            end
+          end
+        end
+      end
     end
   end
 end
@@ -590,4 +573,12 @@ function setCurrentItems(overrideRequestedItems)
   if overrideRequestedItems then
     requestedItems = {brake = imgui.ImInt(v.brake), clutch = imgui.ImInt(v.clutch), exhaust = imgui.ImInt(v.exhaust), handbrake = imgui.ImInt(v.handbrake), injection = imgui.ImInt(v.injection), intercooler = imgui.ImInt(v.intercooler), piston = imgui.ImInt(v.piston), suspension = imgui.ImInt(v.suspension), turbocharging = imgui.ImInt(v.turbocharging)}
   end
+end
+
+function stringToLower(s)
+  for i = 192, 223 do
+    s = s:gsub(string.char(i), string.char(i + 32))
+  end
+  s = s:gsub(string.char(168), string.char(184))
+  return s:lower()
 end
