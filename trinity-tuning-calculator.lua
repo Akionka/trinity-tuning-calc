@@ -295,7 +295,7 @@ local filter = imgui.ImGuiTextFilter()
 
 function imgui.OnDrawFrame()
   if mainWindowState.v then
-    if not imgui.Begin('Trinity Tuning Calculator v'..thisScript()['version'], mainWindowState, imgui.WindowFlags.AlwaysAutoResize) then
+    if not imgui.Begin('Trinity Tuning Calculator v'..thisScript().version, mainWindowState, imgui.WindowFlags.AlwaysAutoResize) then
       imgui.End()
       return
     end
@@ -410,9 +410,9 @@ end
 
 function applyCustomStyle()
   imgui.SwitchContext()
-  local style  = imgui.GetStyle()
+  local style = imgui.GetStyle()
   local colors = style.Colors
-  local clr    = imgui.Col
+  local clr = imgui.Col
   local function ImVec4(color)
     local r = bit.band(bit.rshift(color, 24), 0xFF)
     local g = bit.band(bit.rshift(color, 16), 0xFF)
@@ -421,57 +421,57 @@ function applyCustomStyle()
     return imgui.ImVec4(r/255, g/255, b/255, a/255)
   end
 
-  style['WindowRounding']      = 10.0
-  style['WindowTitleAlign']    = imgui.ImVec2(0.5, 0.5)
-  style['ChildWindowRounding'] = 5.0
-  style['FrameRounding']       = 5.0
-  style['ItemSpacing']         = imgui.ImVec2(5.0, 5.0)
-  style['ScrollbarSize']       = 13.0
-  style['ScrollbarRounding']   = 5
+  style.WindowRounding = 10.0
+  style.WindowTitleAlign = imgui.ImVec2(0.5, 0.5)
+  style.ChildWindowRounding = 5.0
+  style.FrameRounding = 5.0
+  style.ItemSpacing = imgui.ImVec2(5.0, 5.0)
+  style.ScrollbarSize = 13.0
+  style.ScrollbarRounding = 5
 
-  colors[clr['Text']]                 = ImVec4(0xFFFFFFFF)
-  colors[clr['TextDisabled']]         = ImVec4(0xFFFFFFFF)
-  colors[clr['WindowBg']]             = ImVec4(0x212121FF)
-  colors[clr['ChildWindowBg']]        = ImVec4(0x21212180)
-  colors[clr['PopupBg']]              = ImVec4(0x212121FF)
-  colors[clr['Border']]               = ImVec4(0xFFFFFF10)
-  colors[clr['BorderShadow']]         = ImVec4(0x21212100)
-  colors[clr['FrameBg']]              = ImVec4(0xC3E88D90)
-  colors[clr['FrameBgHovered']]       = ImVec4(0xC3E88DFF)
-  colors[clr['FrameBgActive']]        = ImVec4(0x61616150)
-  colors[clr['TitleBg']]              = ImVec4(0x212121FF)
-  colors[clr['TitleBgActive']]        = ImVec4(0x212121FF)
-  colors[clr['TitleBgCollapsed']]     = ImVec4(0x212121FF)
-  colors[clr['MenuBarBg']]            = ImVec4(0x21212180)
-  colors[clr['ScrollbarBg']]          = ImVec4(0x212121FF)
-  colors[clr['ScrollbarGrab']]        = ImVec4(0xEEFFFF20)
-  colors[clr['ScrollbarGrabHovered']] = ImVec4(0xEEFFFF10)
-  colors[clr['ScrollbarGrabActive']]  = ImVec4(0x80CBC4FF)
-  colors[clr['ComboBg']]              = colors[clr['PopupBg']]
-  colors[clr['CheckMark']]            = ImVec4(0x212121FF)
-  colors[clr['SliderGrab']]           = ImVec4(0x212121FF)
-  colors[clr['SliderGrabActive']]     = ImVec4(0x80CBC4FF)
-  colors[clr['Button']]               = ImVec4(0xC3E88D90)
-  colors[clr['ButtonHovered']]        = ImVec4(0xC3E88DFF)
-  colors[clr['ButtonActive']]         = ImVec4(0x61616150)
-  colors[clr['Header']]               = ImVec4(0x151515FF)
-  colors[clr['HeaderHovered']]        = ImVec4(0x252525FF)
-  colors[clr['HeaderActive']]         = ImVec4(0x303030FF)
-  colors[clr['Separator']]            = colors[clr['Border']]
-  colors[clr['SeparatorHovered']]     = ImVec4(0x212121FF)
-  colors[clr['SeparatorActive']]      = ImVec4(0x212121FF)
-  colors[clr['ResizeGrip']]           = ImVec4(0x212121FF)
-  colors[clr['ResizeGripHovered']]    = ImVec4(0x212121FF)
-  colors[clr['ResizeGripActive']]     = ImVec4(0x212121FF)
-  colors[clr['CloseButton']]          = ImVec4(0x212121FF)
-  colors[clr['CloseButtonHovered']]   = ImVec4(0xD41223FF)
-  colors[clr['CloseButtonActive']]    = ImVec4(0xD41223FF)
-  colors[clr['PlotLines']]            = ImVec4(0x212121FF)
-  colors[clr['PlotLinesHovered']]     = ImVec4(0x212121FF)
-  colors[clr['PlotHistogram']]        = ImVec4(0x212121FF)
-  colors[clr['PlotHistogramHovered']] = ImVec4(0x212121FF)
-  colors[clr['TextSelectedBg']]       = ImVec4(0x212121FF)
-  colors[clr['ModalWindowDarkening']] = ImVec4(0x21212180)
+  colors[clr.Text] = ImVec4(0xFFFFFFFF)
+  colors[clr.TextDisabled] = ImVec4(0xFFFFFFFF)
+  colors[clr.WindowBg] = ImVec4(0x212121FF)
+  colors[clr.ChildWindowBg] = ImVec4(0x21212180)
+  colors[clr.PopupBg] = ImVec4(0x212121FF)
+  colors[clr.Border] = ImVec4(0xFFFFFF10)
+  colors[clr.BorderShadow] = ImVec4(0x21212100)
+  colors[clr.FrameBg] = ImVec4(0xC3E88D90)
+  colors[clr.FrameBgHovered] = ImVec4(0xC3E88DFF)
+  colors[clr.FrameBgActive] = ImVec4(0x61616150)
+  colors[clr.TitleBg] = ImVec4(0x212121FF)
+  colors[clr.TitleBgActive] = ImVec4(0x212121FF)
+  colors[clr.TitleBgCollapsed] = ImVec4(0x212121FF)
+  colors[clr.MenuBarBg] = ImVec4(0x21212180)
+  colors[clr.ScrollbarBg] = ImVec4(0x212121FF)
+  colors[clr.ScrollbarGrab] = ImVec4(0xEEFFFF20)
+  colors[clr.ScrollbarGrabHovered] = ImVec4(0xEEFFFF10)
+  colors[clr.ScrollbarGrabActive] = ImVec4(0x80CBC4FF)
+  colors[clr.ComboBg] = colors[clr.PopupBg]
+  colors[clr.CheckMark] = ImVec4(0x212121FF)
+  colors[clr.SliderGrab] = ImVec4(0x212121FF)
+  colors[clr.SliderGrabActive] = ImVec4(0x80CBC4FF)
+  colors[clr.Button] = ImVec4(0xC3E88D90)
+  colors[clr.ButtonHovered] = ImVec4(0xC3E88DFF)
+  colors[clr.ButtonActive] = ImVec4(0x61616150)
+  colors[clr.Header] = ImVec4(0x151515FF)
+  colors[clr.HeaderHovered] = ImVec4(0x252525FF)
+  colors[clr.HeaderActive] = ImVec4(0x303030FF)
+  colors[clr.Separator] = colors[clr.Border]
+  colors[clr.SeparatorHovered] = ImVec4(0x212121FF)
+  colors[clr.SeparatorActive] = ImVec4(0x212121FF)
+  colors[clr.ResizeGrip] = ImVec4(0x212121FF)
+  colors[clr.ResizeGripHovered] = ImVec4(0x212121FF)
+  colors[clr.ResizeGripActive] = ImVec4(0x212121FF)
+  colors[clr.CloseButton] = ImVec4(0x212121FF)
+  colors[clr.CloseButtonHovered] = ImVec4(0xD41223FF)
+  colors[clr.CloseButtonActive] = ImVec4(0xD41223FF)
+  colors[clr.PlotLines] = ImVec4(0x212121FF)
+  colors[clr.PlotLinesHovered] = ImVec4(0x212121FF)
+  colors[clr.PlotHistogram] = ImVec4(0x212121FF)
+  colors[clr.PlotHistogramHovered] = ImVec4(0x212121FF)
+  colors[clr.TextSelectedBg] = ImVec4(0x212121FF)
+  colors[clr.ModalWindowDarkening] = ImVec4(0x21212180)
 end
 
 function sampev.onServerMessage(color, text)
@@ -489,7 +489,6 @@ function sampev.onServerMessage(color, text)
   end
   if text:find(cp'Модификации:{abcdef}') then
     for k, v in pairs(parsedMods) do
-      print(k, v)
       if not v then
         for i, v in ipairs(modifications) do
           if v.key == k then
@@ -498,7 +497,6 @@ function sampev.onServerMessage(color, text)
               local pattern = ('[%s%s]%s #(%%w)'):format(name:sub(1, 1), stringToLower(name:sub(1, 1)), name:sub(2, #name))
               currentItems[k].v = letter2int(text:match(pattern) or int2letter(vehicles[selectedVehicle][k]))
               parsedMods[k] = not not text:find(pattern)
-              print(pattern, text, text:find(pattern))
             else
               local pattern = ('[%s%s]%s'):format(name:sub(1, 1), stringToLower(name:sub(1, 1)), name:sub(2, #name))
               currentItems[k].v = text:find(pattern) and 1 or 0
