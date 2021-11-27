@@ -1,7 +1,7 @@
 script_name('Trinity Tuning Calculator')
 script_author('Akionka')
-script_version('0.0.3')
-script_version_number(4)
+script_version('0.0.4')
+script_version_number(5)
 
 local sampev = require 'samp.events'
 local imgui = require 'imgui'
