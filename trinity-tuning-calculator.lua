@@ -321,7 +321,7 @@ function imgui.OnDrawFrame()
         imgui.Text('Базовая комплектация:')
         for i, v in ipairs(modifications) do
           imgui.BulletText(('%s: %s'):format(v.name, int2letter(vehicles[selectedVehicle][v.key], true)))
-          if i % 2 == 1 then imgui.SameLine() end
+          if i % 2 == 1 and i ~= 1 then imgui.SameLine() end
         end
       end
     end
