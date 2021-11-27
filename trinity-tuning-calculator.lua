@@ -317,6 +317,10 @@ function imgui.OnDrawFrame()
       imgui.Text('Не выбрано т/с, выберите из списка выше')
     else
       imgui.Text(vehicles[selectedVehicle].isModificationSupported and 'Тюнинг этого т/с поддерживается' or 'Тюнинг этого т/с не поддерживается')
+      imgui.Text(('Цена в салоне: %s$\nЦена у автодилера 5 разряда: %s$'):format(
+        formatInt((selectedVehicle >= 0 and selectedVehicle <= 412) and vehicles[selectedVehicle].saloonPrice or 0),
+        formatInt((selectedVehicle >= 0 and selectedVehicle <= 412) and vehicles[selectedVehicle].dealerPrice or 0)
+      ))
       if vehicles[selectedVehicle].isModificationSupported then
         imgui.Text('Базовая комплектация:')
         for i, v in ipairs(modifications) do
@@ -382,7 +386,7 @@ function imgui.OnDrawFrame()
     imgui.BeginChild('Price panel', imgui.ImVec2(275, 410), true)
       for i, v in ipairs(modifications) do
         for i = currentItems[v.key].v + 1, requestedItems[v.key].v do
-          imgui.Text(('%s%s %s $'):format(
+          imgui.Text(('%s%s %s$'):format(
             v.name,
             v.hasManyLevels and ' ' .. int2letter(i, true) or '',
             formatInt(v.price[i])
@@ -390,7 +394,11 @@ function imgui.OnDrawFrame()
         end
       end
       calculateTuningPrice(currentItems, requestedItems)
-      imgui.Text('Итог: ' .. formatInt(price) .. ' $')
+      imgui.Text(('Итог:\nМодификации: %s$\nС учётом машины с салона:%s$\nС учётом машины у автодилера: %s$'):format(
+        formatInt(price),
+        formatInt(price+((selectedVehicle >= 0 and selectedVehicle <= 412) and vehicles[selectedVehicle].saloonPrice or 0)),
+        formatInt(price+((selectedVehicle >= 0 and selectedVehicle <= 412) and vehicles[selectedVehicle].dealerPrice or 0))
+      ))
     imgui.EndChild()
     imgui.EndGroup()
     imgui.End()
