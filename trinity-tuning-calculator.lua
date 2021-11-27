@@ -338,10 +338,12 @@ function imgui.OnDrawFrame()
       imgui.PushItemWidth(100)
       imgui.Text('Текущая комплектация')
       for i, v in ipairs(modifications) do
-        imgui.Combo(v.name, currentItems[v.key],
+        if imgui.Combo(v.name, currentItems[v.key],
           v.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
           v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
-        )
+        ) then
+          satisfyDependencies(v, currentItems)
+        end
       end
       if imgui.Button('Взять с ближайшей машины', imgui.ImVec2(250,0)) then
         sampSendChat('/look')
@@ -365,7 +367,7 @@ function imgui.OnDrawFrame()
           v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
         ) then
           requestedItems[v.key].v = math.max(requestedItems[v.key].v, currentItems[v.key].v)
-          satisfyDependencies(v)
+          satisfyDependencies(v, requestedItems)
         end
       end
       imgui.PopItemWidth()
@@ -577,19 +579,19 @@ function stringToLower(s)
   return s:lower()
 end
 
-function satisfyDependencies(modification)
+function satisfyDependencies(modification, itemsList)
   for i2, v1 in ipairs(modifications) do
     for i3, v2 in ipairs(v1.dependsOn) do
       if modification.key == v2 then
-        if requestedItems[modification.key].v < requestedItems[v1.key].v then
-          requestedItems[v1.key].v = requestedItems[modification.key].v
+        if itemsList[modification.key].v < itemsList[v1.key].v then
+          itemsList[v1.key].v = itemsList[modification.key].v
         end
       end
     end
   end
   for i2, v1 in ipairs(modification.dependsOn) do
-    if requestedItems[v1].v < requestedItems[modification.key].v then
-      requestedItems[v1].v = requestedItems[modification.key].v
+    if itemsList[v1].v < itemsList[modification.key].v then
+      itemsList[v1].v = itemsList[modification.key].v
     end
   end
 end
