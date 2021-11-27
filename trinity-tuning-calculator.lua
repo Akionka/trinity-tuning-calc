@@ -312,6 +312,9 @@ function imgui.OnDrawFrame()
       end
       imgui.ListBoxFooter()
     end
+    if imgui.Button('Очистить выбор') then
+      selectedVehicle = -1
+    end
     imgui.PopItemWidth()
     if selectedVehicle == -1 then
       imgui.Text('Не выбрано т/с, выберите из списка выше')
@@ -355,29 +358,13 @@ function imgui.OnDrawFrame()
     imgui.SameLine()
     imgui.BeginChild('Upgrade panel', imgui.ImVec2(275, 410), true)
       imgui.PushItemWidth(100)
-      imgui.Text('Желаемая комплектация')
-      for i1, v1 in ipairs(modifications) do
-        if imgui.Combo(v1.name, requestedItems[v1.key],
-          v1.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
-          v1.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
+      imgui.Text((selectedVehicle == -1 or vehicles[selectedVehicle].isModificationSupported) and 'Желаемая комплектация' or 'Модификация не поддерживается')
+      for _, v in ipairs(modifications) do
+        if (selectedVehicle == -1 or vehicles[selectedVehicle].isModificationSupported) and imgui.Combo(v.name, requestedItems[v.key],
+          v.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
+          v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
         ) then
-          -- Проверка, что изменненый объект уровнем не ниже, чем тот объект,
-          -- который зависит от выбранного.
-          -- При выборе спецления А, если выбран турбо С, турбо станет А
-          for i2, v2 in ipairs(modifications) do
-            for i3, v3 in ipairs(v2.dependsOn) do
-              if v1.key == v3 then
-                if requestedItems[v1.key].v < requestedItems[v2.key].v then
-                  requestedItems[v2.key].v = requestedItems[v1.key].v
-                end
-              end
-            end
-          end
-          for i2, v2 in ipairs(v1.dependsOn) do
-            if requestedItems[v2].v < requestedItems[v1.key].v then
-              requestedItems[v2].v = requestedItems[v1.key].v
-            end
-          end
+          satisfyDependencies(v)
         end
       end
       imgui.PopItemWidth()
@@ -587,4 +574,21 @@ function stringToLower(s)
   end
   s = s:gsub(string.char(168), string.char(184))
   return s:lower()
+end
+
+function satisfyDependencies(modification)
+  for i2, v1 in ipairs(modifications) do
+    for i3, v2 in ipairs(v1.dependsOn) do
+      if modification.key == v2 then
+        if requestedItems[modification.key].v < requestedItems[v1.key].v then
+          requestedItems[v1.key].v = requestedItems[modification.key].v
+        end
+      end
+    end
+  end
+  for i2, v1 in ipairs(modification.dependsOn) do
+    if requestedItems[v1].v < requestedItems[modification.key].v then
+      requestedItems[v1].v = requestedItems[modification.key].v
+    end
+  end
 end
