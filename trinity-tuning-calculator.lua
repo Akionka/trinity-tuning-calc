@@ -364,6 +364,7 @@ function imgui.OnDrawFrame()
           v.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
           v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
         ) then
+          requestedItems[v.key].v = math.max(requestedItems[v.key].v, currentItems[v.key].v)
           satisfyDependencies(v)
         end
       end
