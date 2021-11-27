@@ -342,6 +342,9 @@ function imgui.OnDrawFrame()
           v.hasManyLevels and {'Нет', 'A', 'B', 'C'} or {'Нет', 'Есть'},
           v.hasManyLevels and imgui.ImInt(4) or imgui.ImInt(2)
         ) then
+          if selectedVehicle ~= -1 then
+            currentItems[v.key].v = math.max(currentItems[v.key].v, vehicles[selectedVehicle][v.key])
+          end
           satisfyDependencies(v, currentItems)
         end
       end
